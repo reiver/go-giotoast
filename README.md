@@ -2,6 +2,9 @@
 
 Package **giotoast** provides a UI **toast** components for the **Gio UI** library, for the Go programming-language (golang).
 
+A UI **toast** is a temporary, auto-dismissing notification that briefly appears on the screen to provide some type of feedback.
+It is called "toast" because typically it *pops-up* into view for a short while and then slides away once a timer ends — much like a piece of toast popping out of a toaster.
+
 ## Documentation
 
 Online documentation, which includes examples, can be found at: http://godoc.org/github.com/reiver/go-giotoast
