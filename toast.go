@@ -219,6 +219,11 @@ func (receiver *Toast) show(toastType Type, message string, action string, durat
 
 func (receiver *Toast) layoutCard(gtx layout.Context, th *material.Theme, revealed float32) layout.Dimensions {
 
+	var maxWidth int = gtx.Dp(unit.Dp(568))
+	if gtx.Constraints.Max.X > maxWidth {
+		gtx.Constraints.Max.X = maxWidth
+	}
+
 	var macro op.MacroOp = op.Record(gtx.Ops)
 
 	dims := layout.Inset{
@@ -238,11 +243,6 @@ func (receiver *Toast) layoutCard(gtx layout.Context, th *material.Theme, reveal
 	})
 
 	var call op.CallOp = macro.Stop()
-
-	var maxWidth int = gtx.Dp(unit.Dp(568))
-	if dims.Size.X > maxWidth {
-		dims.Size.X = maxWidth
-	}
 
 	// background
 	var rr int = gtx.Dp(unit.Dp(4))

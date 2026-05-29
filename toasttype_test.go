@@ -5,6 +5,29 @@ import (
 	"testing"
 )
 
+func TestType_String(t *testing.T) {
+	tests := []struct{
+		name     string
+		tt       Type
+		expected string
+	}{
+		{"neutral", TypeNeutral, "Neutral"},
+		{"success", TypeSuccess, "Success"},
+		{"error", TypeError, "Error"},
+		{"warning", TypeWarning, "Warning"},
+		{"info", TypeInfo, "Info"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var actual string = test.tt.String()
+			if test.expected != actual {
+				t.Errorf("expected %q, got %q", test.expected, actual)
+			}
+		})
+	}
+}
+
 func TestType_Color(t *testing.T) {
 	tests := []struct{
 		name     string

@@ -155,9 +155,8 @@ func TestToast_ShowAction_DefaultDuration(t *testing.T) {
 
 	toast.ShowAction(TypeError, "deleted", "UNDO", 0, now)
 
-	var expected time.Duration = 5 * time.Second
-	if expected != toast.duration {
-		t.Errorf("expected duration %v, got %v", expected, toast.duration)
+	if DefaultActionDuration != toast.duration {
+		t.Errorf("expected duration %v, got %v", DefaultActionDuration, toast.duration)
 	}
 }
 

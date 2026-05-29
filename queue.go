@@ -129,6 +129,8 @@ func (receiver *Queue) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 	// advance the queue if the current toast has finished
 	if !receiver.current.Visible() && 0 < len(receiver.pending) {
 		var next pendingToast = receiver.pending[0]
+		// Zero the consumed slot so its strings can be GC'd while the backing array is still alive.
+		receiver.pending[0] = pendingToast{}
 		receiver.pending = receiver.pending[1:]
 
 		if "" != next.action {
