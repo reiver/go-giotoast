@@ -12,6 +12,14 @@ import (
 // Type represents the category of a toast notification.
 //
 // Each type has an associated background color and leading icon.
+//
+// See also:
+//
+//	• [TypeError]
+//	• [TypeInfo]
+//	• [TypeNeutral]
+//	• [TypeSuccess]
+//	• [TypeWarning]
 type Type int
 
 const (
