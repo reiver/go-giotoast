@@ -9,5 +9,5 @@ const (
 	ErrQueueFull = erorr.Error("giotoast: queue is full")
 
 	// ErrReceiverNil is returned when a receiver is nil.
-	ErrReceiverNil = erorr.Error("nil receiver")
+	ErrReceiverNil = erorr.Error("giotoast: nil receiver")
 )

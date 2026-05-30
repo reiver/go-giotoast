@@ -1,6 +1,7 @@
 package giotoast
 
 import (
+	"fmt"
 	"image/color"
 
 	"gioui.org/widget"
@@ -41,8 +42,10 @@ func (receiver Type) String() string {
 		return "Warning"
 	case TypeInfo:
 		return "Info"
-	default:
+	case TypeNeutral:
 		return "Neutral"
+	default:
+		return fmt.Sprintf("Type(%d)", receiver)
 	}
 }
 
