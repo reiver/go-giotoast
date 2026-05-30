@@ -9,28 +9,28 @@ import (
 )
 
 func TestToast_NilReceiver_Show(t *testing.T) {
-	var toast *Toast
+	var toast *toast
 
 	// should not panic
 	toast.Show("hello", 3*time.Second, time.Now())
 }
 
 func TestToast_NilReceiver_ShowType(t *testing.T) {
-	var toast *Toast
+	var toast *toast
 
 	// should not panic
 	toast.ShowType(TypeSuccess, "hello", 3*time.Second, time.Now())
 }
 
 func TestToast_NilReceiver_ShowAction(t *testing.T) {
-	var toast *Toast
+	var toast *toast
 
 	// should not panic
 	toast.ShowAction(TypeError, "deleted", "UNDO", 5*time.Second, time.Now())
 }
 
 func TestToast_NilReceiver_ActionClicked(t *testing.T) {
-	var toast *Toast
+	var toast *toast
 
 	actual := toast.ActionClicked(layoutContext())
 	if false != actual {
@@ -39,14 +39,14 @@ func TestToast_NilReceiver_ActionClicked(t *testing.T) {
 }
 
 func TestToast_NilReceiver_Dismiss(t *testing.T) {
-	var toast *Toast
+	var toast *toast
 
 	// should not panic
 	toast.Dismiss(time.Now())
 }
 
 func TestToast_NilReceiver_Visible(t *testing.T) {
-	var toast *Toast
+	var toast *toast
 
 	actual := toast.Visible()
 	if false != actual {
@@ -55,7 +55,7 @@ func TestToast_NilReceiver_Visible(t *testing.T) {
 }
 
 func TestToast_NilReceiver_Layout(t *testing.T) {
-	var toast *Toast
+	var toast *toast
 
 	// should not panic, should return zero dimensions
 	var dims = toast.Layout(layoutContext(), nil)
@@ -65,7 +65,7 @@ func TestToast_NilReceiver_Layout(t *testing.T) {
 }
 
 func TestToast_NotVisible_Initially(t *testing.T) {
-	var toast Toast
+	var toast toast
 
 	if toast.Visible() {
 		t.Error("expected toast to not be visible initially")
@@ -73,7 +73,7 @@ func TestToast_NotVisible_Initially(t *testing.T) {
 }
 
 func TestToast_Show(t *testing.T) {
-	var toast Toast
+	var toast toast
 
 	var now time.Time = time.Now()
 
@@ -93,7 +93,7 @@ func TestToast_Show(t *testing.T) {
 }
 
 func TestToast_Show_DefaultDuration(t *testing.T) {
-	var toast Toast
+	var toast toast
 
 	var now time.Time = time.Now()
 
@@ -105,7 +105,7 @@ func TestToast_Show_DefaultDuration(t *testing.T) {
 }
 
 func TestToast_ShowType(t *testing.T) {
-	var toast Toast
+	var toast toast
 
 	var now time.Time = time.Now()
 
@@ -125,7 +125,7 @@ func TestToast_ShowType(t *testing.T) {
 }
 
 func TestToast_ShowAction(t *testing.T) {
-	var toast Toast
+	var toast toast
 
 	var now time.Time = time.Now()
 
@@ -149,7 +149,7 @@ func TestToast_ShowAction(t *testing.T) {
 }
 
 func TestToast_ShowAction_DefaultDuration(t *testing.T) {
-	var toast Toast
+	var toast toast
 
 	var now time.Time = time.Now()
 
@@ -161,7 +161,7 @@ func TestToast_ShowAction_DefaultDuration(t *testing.T) {
 }
 
 func TestToast_Dismiss(t *testing.T) {
-	var toast Toast
+	var toast toast
 
 	var now time.Time = time.Now()
 
@@ -174,7 +174,7 @@ func TestToast_Dismiss(t *testing.T) {
 }
 
 func TestToast_Layout_Visible(t *testing.T) {
-	var toast Toast
+	var toast toast
 	var th *material.Theme = material.NewTheme()
 	var gtx = layoutContext()
 
@@ -187,7 +187,7 @@ func TestToast_Layout_Visible(t *testing.T) {
 }
 
 func TestToast_Layout_VisibleWithAction(t *testing.T) {
-	var toast Toast
+	var toast toast
 	var th *material.Theme = material.NewTheme()
 	var gtx = layoutContext()
 

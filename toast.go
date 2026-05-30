@@ -16,44 +16,13 @@ import (
 	"gioui.org/x/component"
 )
 
-// Toast represents an in-app toast notification that appears at the bottom
+// toast represents an in-app toast notification that appears at the bottom
 // of the screen and auto-dismisses after a duration.
 //
-// Like most Gio widgets, a Toast is not safe for concurrent use.
-// All methods must be called from the Gio main goroutine (the event loop).
-//
-// A Toast is similar to a Material Design "Snackbar".
-//
-// Example usage:
-//
-//	var t giotoast.Toast
-//
-//	// Show a plain toast:
-//	t.Show("Profile saved", 3*time.Second, gtx.Now)
-//
-//	// Show a typed toast with an icon:
-//	t.ShowType(giotoast.TypeSuccess, "Profile saved", 3*time.Second, gtx.Now)
-//
-//	// Show a toast with an action button:
-//	t.ShowAction(giotoast.TypeNeutral, "Message deleted", "UNDO", 5*time.Second, gtx.Now)
-//
-//	// Check if the action button was clicked:
-//	if t.ActionClicked(gtx) {
-//		// handle undo
-//	}
-//
-//	// In your layout, overlay the toast on top of your content:
-//	layout.Stack{}.Layout(gtx,
-//		layout.Stacked(func(gtx layout.Context) layout.Dimensions {
-//			return yourContent(gtx, th)
-//		}),
-//		layout.Stacked(func(gtx layout.Context) layout.Dimensions {
-//			return t.Layout(gtx, th)
-//		}),
-//	)
-type Toast struct {
+// It is used internally by [Queue]. Use [Queue] to show toasts in your application.
+type toast struct {
 	// shown guards against VisibilityAnimation's zero value being Visible (iota=0).
-	// Without this, a zero-value Toast would report as visible.
+	// Without this, a zero-value toast would report as visible.
 	shown           bool
 	message         string
 	toastType       Type
@@ -73,7 +42,7 @@ type Toast struct {
 // If a toast is already visible, it is replaced immediately (without a fade-out).
 //
 // If duration is less-than or equal-to zero, a default duration of 3 seconds is used.
-func (receiver *Toast) Show(message string, duration time.Duration, now time.Time) {
+func (receiver *toast) Show(message string, duration time.Duration, now time.Time) {
 	if nil == receiver {
 		return
 	}
@@ -87,7 +56,7 @@ func (receiver *Toast) Show(message string, duration time.Duration, now time.Tim
 // The toast type determines the background color and leading icon.
 //
 // If duration is less-than or equal-to zero, a default duration of 3 seconds is used.
-func (receiver *Toast) ShowType(toastType Type, message string, duration time.Duration, now time.Time) {
+func (receiver *toast) ShowType(toastType Type, message string, duration time.Duration, now time.Time) {
 	if nil == receiver {
 		return
 	}
@@ -98,11 +67,11 @@ func (receiver *Toast) ShowType(toastType Type, message string, duration time.Du
 // ShowAction shows a toast with a type, message, and an action button.
 // If a toast is already visible, it is replaced immediately (without a fade-out).
 //
-// Use [Toast.ActionClicked] to check if the action button was clicked.
+// Use [Queue.ActionClicked] to check if the action button was clicked.
 //
 // If duration is less-than or equal-to zero, a default duration of 5 seconds is used
 // (longer than the default for non-action toasts, to give the user time to read and act).
-func (receiver *Toast) ShowAction(toastType Type, message string, action string, duration time.Duration, now time.Time) {
+func (receiver *toast) ShowAction(toastType Type, message string, action string, duration time.Duration, now time.Time) {
 	if nil == receiver {
 		return
 	}
@@ -117,7 +86,7 @@ func (receiver *Toast) ShowAction(toastType Type, message string, action string,
 // ActionClicked reports whether the action button was clicked since the last call to ActionClicked.
 //
 // When the action is clicked, the toast is also dismissed.
-func (receiver *Toast) ActionClicked(gtx layout.Context) bool {
+func (receiver *toast) ActionClicked(gtx layout.Context) bool {
 	if nil == receiver {
 		return false
 	}
@@ -139,7 +108,7 @@ func (receiver *Toast) ActionClicked(gtx layout.Context) bool {
 }
 
 // Dismiss dismisses the toast immediately (with a fade-out animation).
-func (receiver *Toast) Dismiss(now time.Time) {
+func (receiver *toast) Dismiss(now time.Time) {
 	if nil == receiver {
 		return
 	}
@@ -148,7 +117,7 @@ func (receiver *Toast) Dismiss(now time.Time) {
 }
 
 // Visible reports whether the toast is currently visible (including while animating).
-func (receiver *Toast) Visible() bool {
+func (receiver *toast) Visible() bool {
 	if nil == receiver {
 		return false
 	}
@@ -163,7 +132,7 @@ func (receiver *Toast) Visible() bool {
 // Layout draws the toast. It should be called as an overlay on top of your main content.
 //
 // If the toast is not visible, Layout is a no-op and returns zero dimensions.
-func (receiver *Toast) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions {
+func (receiver *toast) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions {
 	if nil == receiver {
 		return layout.Dimensions{}
 	}
@@ -203,7 +172,7 @@ func (receiver *Toast) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 	})
 }
 
-func (receiver *Toast) show(toastType Type, message string, action string, duration time.Duration, now time.Time) {
+func (receiver *toast) show(toastType Type, message string, action string, duration time.Duration, now time.Time) {
 	if duration <= 0 {
 		duration = DefaultDuration
 	}
@@ -223,7 +192,7 @@ func (receiver *Toast) show(toastType Type, message string, action string, durat
 	receiver.anim.Appear(now)
 }
 
-func (receiver *Toast) layoutCard(gtx layout.Context, th *material.Theme, revealed float32) layout.Dimensions {
+func (receiver *toast) layoutCard(gtx layout.Context, th *material.Theme, revealed float32) layout.Dimensions {
 
 	var maxWidth int = gtx.Dp(unit.Dp(568))
 	if gtx.Constraints.Max.X > maxWidth {
@@ -280,7 +249,7 @@ func (receiver *Toast) layoutCard(gtx layout.Context, th *material.Theme, reveal
 	return dims
 }
 
-func (receiver *Toast) layoutIcon(gtx layout.Context) layout.FlexChild {
+func (receiver *toast) layoutIcon(gtx layout.Context) layout.FlexChild {
 	var icon *widget.Icon = receiver.toastType.Icon()
 	if nil == icon {
 		return layout.Rigid(func(gtx layout.Context) layout.Dimensions {
@@ -300,7 +269,7 @@ func (receiver *Toast) layoutIcon(gtx layout.Context) layout.FlexChild {
 	})
 }
 
-func (receiver *Toast) layoutMessage(gtx layout.Context, th *material.Theme) layout.FlexChild {
+func (receiver *toast) layoutMessage(gtx layout.Context, th *material.Theme) layout.FlexChild {
 	return layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 		var lbl material.LabelStyle = material.Body2(th, receiver.message)
 		lbl.Color = receiver.textColor
@@ -308,7 +277,7 @@ func (receiver *Toast) layoutMessage(gtx layout.Context, th *material.Theme) lay
 	})
 }
 
-func (receiver *Toast) layoutAction(gtx layout.Context, th *material.Theme) layout.FlexChild {
+func (receiver *toast) layoutAction(gtx layout.Context, th *material.Theme) layout.FlexChild {
 	if "" == receiver.action {
 		return layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 			return layout.Dimensions{}
@@ -333,7 +302,7 @@ func (receiver *Toast) layoutAction(gtx layout.Context, th *material.Theme) layo
 	})
 }
 
-func (receiver *Toast) layoutClose(gtx layout.Context, th *material.Theme) layout.FlexChild {
+func (receiver *toast) layoutClose(gtx layout.Context, th *material.Theme) layout.FlexChild {
 	return layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 		return layout.Inset{
 			Left: unit.Dp(4),

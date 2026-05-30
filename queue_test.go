@@ -155,6 +155,129 @@ func TestQueue_EnqueueAction_DefaultDuration(t *testing.T) {
 	}
 }
 
+func TestQueue_Show(t *testing.T) {
+	var queue Queue
+
+	var now time.Time = time.Now()
+
+	queue.Show("hello", 3*time.Second, now)
+
+	if !queue.current.Visible() {
+		t.Error("expected toast to be visible")
+	}
+
+	if "hello" != queue.current.message {
+		t.Errorf("expected message %q, got %q", "hello", queue.current.message)
+	}
+
+	if TypeNeutral != queue.current.toastType {
+		t.Errorf("expected TypeNeutral, got %v", queue.current.toastType)
+	}
+}
+
+func TestQueue_ShowType(t *testing.T) {
+	var queue Queue
+
+	var now time.Time = time.Now()
+
+	queue.ShowType(TypeSuccess, "saved", 3*time.Second, now)
+
+	if !queue.current.Visible() {
+		t.Error("expected toast to be visible")
+	}
+
+	if TypeSuccess != queue.current.toastType {
+		t.Errorf("expected TypeSuccess, got %v", queue.current.toastType)
+	}
+}
+
+func TestQueue_ShowAction(t *testing.T) {
+	var queue Queue
+
+	var now time.Time = time.Now()
+
+	queue.ShowAction(TypeError, "deleted", "UNDO", 5*time.Second, now)
+
+	if !queue.current.Visible() {
+		t.Error("expected toast to be visible")
+	}
+
+	if "UNDO" != queue.current.action {
+		t.Errorf("expected action %q, got %q", "UNDO", queue.current.action)
+	}
+}
+
+func TestQueue_Show_ClearsPending(t *testing.T) {
+	var queue Queue
+
+	var now time.Time = time.Now()
+
+	// enqueue several toasts
+	queue.Enqueue("first", 3*time.Second, now)
+	queue.Enqueue("second", 3*time.Second, now)
+	queue.Enqueue("third", 3*time.Second, now)
+
+	if 2 != len(queue.pending) {
+		t.Fatalf("expected 2 pending toasts, got %d", len(queue.pending))
+	}
+
+	// Show should clear pending and replace current
+	queue.Show("urgent", 3*time.Second, now)
+
+	if 0 != len(queue.pending) {
+		t.Errorf("expected 0 pending toasts after Show, got %d", len(queue.pending))
+	}
+
+	if "urgent" != queue.current.message {
+		t.Errorf("expected message %q, got %q", "urgent", queue.current.message)
+	}
+}
+
+func TestQueue_Show_DefaultDuration(t *testing.T) {
+	var queue Queue
+
+	var now time.Time = time.Now()
+
+	queue.Show("hello", 0, now)
+
+	if DefaultDuration != queue.current.duration {
+		t.Errorf("expected default duration %v, got %v", DefaultDuration, queue.current.duration)
+	}
+}
+
+func TestQueue_ShowAction_DefaultDuration(t *testing.T) {
+	var queue Queue
+
+	var now time.Time = time.Now()
+
+	queue.ShowAction(TypeError, "deleted", "UNDO", 0, now)
+
+	if DefaultActionDuration != queue.current.duration {
+		t.Errorf("expected duration %v, got %v", DefaultActionDuration, queue.current.duration)
+	}
+}
+
+func TestQueue_NilReceiver_Show(t *testing.T) {
+	var queue *Queue
+
+	// should not panic
+	queue.Show("hello", 3*time.Second, time.Now())
+}
+
+func TestQueue_NilReceiver_ShowType(t *testing.T) {
+	var queue *Queue
+
+	// should not panic
+	queue.ShowType(TypeSuccess, "hello", 3*time.Second, time.Now())
+}
+
+func TestQueue_NilReceiver_ShowAction(t *testing.T) {
+	var queue *Queue
+
+	// should not panic
+	queue.ShowAction(TypeError, "deleted", "UNDO", 5*time.Second, time.Now())
+}
+
 func TestQueue_Enqueue_QueueFull(t *testing.T) {
 	var queue Queue
 

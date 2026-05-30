@@ -41,29 +41,6 @@
 //		)
 //	}
 //
-// If you only need a single toast at a time, you can use [Toast] directly instead.
-//
-// # Single Toast
-//
-// Use [Toast] to show a single message at a time:
-//
-//	var toast giotoast.Toast
-//
-//	// Show a toast (for example, in response to a button click):
-//	toast.Show("Profile saved", 3*time.Second, gtx.Now)
-//
-//	// In your layout, overlay the toast on top of your content:
-//	layout.Stack{}.Layout(gtx,
-//		layout.Stacked(func(gtx layout.Context) layout.Dimensions {
-//			return yourContent(gtx, th)
-//		}),
-//		layout.Stacked(func(gtx layout.Context) layout.Dimensions {
-//			return toast.Layout(gtx, th)
-//		}),
-//	)
-//
-// (Where `gtx` in the example is a [layout.Context].)
-//
 // The toast will fade in, remain visible for the given duration, and then fade out and disappear.
 //
 // # Toast Types
@@ -76,18 +53,18 @@
 //   - [TypeWarning] — orange background, warning icon
 //   - [TypeInfo]    — blue background, info icon
 //
-// Use [Toast.ShowType] to show a typed toast:
+// Use [Queue.ShowType] to show a typed toast:
 //
-//	toast.ShowType(giotoast.TypeSuccess, "Profile saved", 3*time.Second, gtx.Now)
+//	q.ShowType(giotoast.TypeSuccess, "Profile saved", 3*time.Second, gtx.Now)
 //
 // # Action Button
 //
 // Toasts can include an action button (for example, "UNDO"):
 //
-//	toast.ShowAction(giotoast.TypeNeutral, "Message deleted", "UNDO", 5*time.Second, gtx.Now)
+//	q.ShowAction(giotoast.TypeNeutral, "Message deleted", "UNDO", 5*time.Second, gtx.Now)
 //
 //	// Check if the action was clicked (before calling Layout):
-//	if toast.ActionClicked(gtx) {
+//	if q.ActionClicked(gtx) {
 //		// undo the deletion
 //	}
 //
@@ -101,7 +78,7 @@
 //
 // You can also dismiss a toast programmatically:
 //
-//	toast.Dismiss(gtx.Now)
+//	q.Dismiss(gtx.Now)
 //
 // # Queue
 //
@@ -131,6 +108,17 @@
 //
 // When the first toast finishes (auto-dismiss or manual dismiss),
 // the next pending toast is shown automatically.
+//
+// # Last-Write-Wins
+//
+// [Queue] also supports a "last-write-wins" pattern via [Queue.Show],
+// [Queue.ShowType], and [Queue.ShowAction]. These methods replace the current
+// toast immediately and clear any pending toasts:
+//
+//	// Replace whatever is showing (and discard anything queued):
+//	q.Show("Connection lost", 5*time.Second, gtx.Now)
+//
+// Both patterns (FIFO and last-write-wins) can be mixed freely on the same [Queue].
 //
 // # Customization
 //

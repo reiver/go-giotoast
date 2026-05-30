@@ -13,6 +13,17 @@ import (
 // Like most Gio widgets, a Queue is not safe for concurrent use.
 // All methods must be called from the Gio main goroutine (the event loop).
 //
+// Queue supports two usage patterns:
+//
+//   - FIFO (first-in, first-out): Use [Queue.Enqueue], [Queue.EnqueueType], and
+//     [Queue.EnqueueAction] to add toasts to the queue. Each toast is shown in order
+//     after the previous one dismisses.
+//
+//   - Last-write-wins: Use [Queue.Show], [Queue.ShowType], and [Queue.ShowAction] to
+//     replace the current toast immediately and clear any pending toasts.
+//
+// Both patterns can be mixed freely on the same Queue.
+//
 // When a toast is dismissed (either by auto-dismiss or manual dismiss),
 // the next toast in the queue is shown.
 //
@@ -40,7 +51,7 @@ import (
 //		}),
 //	)
 type Queue struct {
-	current Toast
+	current toast
 	pending []pendingToast
 }
 
@@ -101,6 +112,53 @@ func (receiver *Queue) EnqueueAction(toastType Type, message string, action stri
 	return receiver.enqueue(toastType, message, action, duration, now)
 }
 
+// Show shows a [TypeNeutral] toast immediately, clearing any pending toasts.
+// This is the "last-write-wins" counterpart to [Queue.Enqueue].
+//
+// If a toast is already visible, it is replaced immediately (without a fade-out).
+//
+// If duration is less-than or equal-to zero, a default duration of 3 seconds is used.
+func (receiver *Queue) Show(message string, duration time.Duration, now time.Time) {
+	if nil == receiver {
+		return
+	}
+
+	receiver.pending = nil
+	receiver.current.Show(message, duration, now)
+}
+
+// ShowType shows a typed toast immediately, clearing any pending toasts.
+// This is the "last-write-wins" counterpart to [Queue.EnqueueType].
+//
+// If a toast is already visible, it is replaced immediately (without a fade-out).
+//
+// If duration is less-than or equal-to zero, a default duration of 3 seconds is used.
+func (receiver *Queue) ShowType(toastType Type, message string, duration time.Duration, now time.Time) {
+	if nil == receiver {
+		return
+	}
+
+	receiver.pending = nil
+	receiver.current.ShowType(toastType, message, duration, now)
+}
+
+// ShowAction shows a toast with an action button immediately, clearing any pending toasts.
+// This is the "last-write-wins" counterpart to [Queue.EnqueueAction].
+//
+// Use [Queue.ActionClicked] to check if the action button was clicked.
+//
+// If a toast is already visible, it is replaced immediately (without a fade-out).
+//
+// If duration is less-than or equal-to zero, a default duration of 5 seconds is used.
+func (receiver *Queue) ShowAction(toastType Type, message string, action string, duration time.Duration, now time.Time) {
+	if nil == receiver {
+		return
+	}
+
+	receiver.pending = nil
+	receiver.current.ShowAction(toastType, message, action, duration, now)
+}
+
 // ActionClicked reports whether the action button on the current toast was clicked.
 //
 // When the action is clicked, the current toast is also dismissed.
@@ -119,6 +177,15 @@ func (receiver *Queue) Dismiss(now time.Time) {
 	}
 
 	receiver.current.Dismiss(now)
+}
+
+// Visible reports whether a toast is currently visible (including while animating).
+func (receiver *Queue) Visible() bool {
+	if nil == receiver {
+		return false
+	}
+
+	return receiver.current.Visible()
 }
 
 // Layout draws the current toast. It should be called as an overlay on top of your main content.
