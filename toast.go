@@ -19,6 +19,9 @@ import (
 // Toast represents an in-app toast notification that appears at the bottom
 // of the screen and auto-dismisses after a duration.
 //
+// Like most Gio widgets, a Toast is not safe for concurrent use.
+// All methods must be called from the Gio main goroutine (the event loop).
+//
 // A Toast is similar to a Material Design "Snackbar".
 //
 // Example usage:
@@ -67,6 +70,7 @@ type Toast struct {
 }
 
 // Show shows a [TypeNeutral] toast with the given message that will auto-dismiss after the given duration.
+// If a toast is already visible, it is replaced immediately (without a fade-out).
 //
 // If duration is less-than or equal-to zero, a default duration of 3 seconds is used.
 func (receiver *Toast) Show(message string, duration time.Duration, now time.Time) {
@@ -78,6 +82,7 @@ func (receiver *Toast) Show(message string, duration time.Duration, now time.Tim
 }
 
 // ShowType shows a typed toast with the given message that will auto-dismiss after the given duration.
+// If a toast is already visible, it is replaced immediately (without a fade-out).
 //
 // The toast type determines the background color and leading icon.
 //
@@ -91,6 +96,7 @@ func (receiver *Toast) ShowType(toastType Type, message string, duration time.Du
 }
 
 // ShowAction shows a toast with a type, message, and an action button.
+// If a toast is already visible, it is replaced immediately (without a fade-out).
 //
 // Use [Toast.ActionClicked] to check if the action button was clicked.
 //

@@ -4,10 +4,14 @@ import (
 	"time"
 
 	"gioui.org/layout"
+	"gioui.org/op"
 	"gioui.org/widget/material"
 )
 
 // Queue manages a queue of toast messages, showing one at a time.
+//
+// Like most Gio widgets, a Queue is not safe for concurrent use.
+// All methods must be called from the Gio main goroutine (the event loop).
 //
 // When a toast is dismissed (either by auto-dismiss or manual dismiss),
 // the next toast in the queue is shown.
@@ -138,6 +142,11 @@ func (receiver *Queue) Layout(gtx layout.Context, th *material.Theme) layout.Dim
 		} else {
 			receiver.current.ShowType(next.toastType, next.message, next.duration, gtx.Now)
 		}
+	}
+
+	// Ensure a frame fires after the current toast's fade-out completes so the queue can advance.
+	if receiver.current.Visible() && 0 < len(receiver.pending) {
+		gtx.Execute(op.InvalidateCmd{})
 	}
 
 	return receiver.current.Layout(gtx, th)

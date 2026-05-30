@@ -16,6 +16,7 @@ func TestType_String(t *testing.T) {
 		{"error", TypeError, "Error"},
 		{"warning", TypeWarning, "Warning"},
 		{"info", TypeInfo, "Info"},
+		{"unknown", Type(99), "Type(99)"},
 	}
 
 	for _, test := range tests {
