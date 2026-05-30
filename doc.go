@@ -8,30 +8,40 @@
 //
 // # Integration
 //
-// A toast is typically stored as a field on your application struct
-// and triggered in response to user actions (such as a button click):
+// For most applications, use [Queue] — it handles multiple toasts gracefully,
+// showing them one at a time:
 //
 //	type App struct {
-//		toast   giotoast.Toast
-//		saveBtn widget.Clickable
+//		toasts    giotoast.Queue
+//		saveBtn   widget.Clickable
+//		deleteBtn widget.Clickable
 //	}
 //
 //	func (app *App) Layout(gtx layout.Context, th *material.Theme) layout.Dimensions {
-//		// trigger a toast from a button click
 //		if app.saveBtn.Clicked(gtx) {
-//			app.toast.Show("Profile saved", 3*time.Second, gtx.Now)
+//			app.toasts.Enqueue("Profile saved", 3*time.Second, gtx.Now)
 //		}
 //
-//		// overlay the toast on top of your content
+//		if app.deleteBtn.Clicked(gtx) {
+//			app.toasts.EnqueueAction(giotoast.TypeError, "Message deleted", "UNDO", 5*time.Second, gtx.Now)
+//		}
+//
+//		if app.toasts.ActionClicked(gtx) {
+//			// undo the deletion
+//		}
+//
+//		// overlay the toasts on top of your content
 //		return layout.Stack{}.Layout(gtx,
 //			layout.Stacked(func(gtx layout.Context) layout.Dimensions {
-//				return material.Button(th, &app.saveBtn, "Save").Layout(gtx)
+//				return yourContent(gtx, th)
 //			}),
 //			layout.Stacked(func(gtx layout.Context) layout.Dimensions {
-//				return app.toast.Layout(gtx, th)
+//				return app.toasts.Layout(gtx, th)
 //			}),
 //		)
 //	}
+//
+// If you only need a single toast at a time, you can use [Toast] directly instead.
 //
 // # Single Toast
 //
