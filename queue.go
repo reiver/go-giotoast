@@ -162,6 +162,11 @@ func (receiver *Queue) ShowAction(toastType Type, message string, action string,
 // ActionClicked reports whether the action button on the current toast was clicked.
 //
 // When the action is clicked, the current toast is also dismissed.
+//
+// ActionClicked does not identify which toast's action was clicked — it applies
+// to whichever toast is currently showing. If you need different handlers for
+// different actions, use [Queue.ShowAction] (last-write-wins) so that only one
+// action toast is active at a time.
 func (receiver *Queue) ActionClicked(gtx layout.Context) bool {
 	if nil == receiver {
 		return false
